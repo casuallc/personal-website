@@ -1,0 +1,25 @@
+.login-input {
+	border:0;
+	background-color:#828282;
+	height:35px;
+	padding:1px;
+	margin-left:4px;
+}
+
+.login-user {
+	font-size:14px;
+	margin:2px;
+}
+
+.login-operate {
+	border:1px solid #919191; 
+	padding:5px; 
+	margin:20px 2px 10px 0; 
+	border-radius:3px;
+}
+
+.login-input-focus {
+	border:1px solid #919191;
+	padding:2px;
+	margin:5px 2px;
+}

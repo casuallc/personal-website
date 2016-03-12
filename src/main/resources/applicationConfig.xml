@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd
+			http://www.springframework.org/schema/aop 
+			http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+			http://www.springframework.org/schema/tx 
+			http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+			http://www.springframework.org/schema/mvc 
+			http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+			http://www.springframework.org/schema/context 
+			http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<context:component-scan base-package="com.qing.*"></context:component-scan>
+	<!-- 配置数据源 -->
+	<context:property-placeholder location="classpath:db.properties" order="1" />
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc_url}" />
+		<property name="username" value="${jdbc_username}" />
+		<property name="password" value="${jdbc_password}" />
+		<property name="filters" value="${jdbc_filters}" />
+		<property name="maxActive" value="${jdbc_maxActive}" />
+		<property name="initialSize" value="${jdbc_initialSize}" />
+		<property name="maxWait" value="${jdbc_maxWait}" />
+		<property name="minIdle" value="${jdbc_minIdle}" />
+		<property name="timeBetweenEvictionRunsMillis" value="${jdbc_timeBetweenEvictionRunsMillis}" />
+		<property name="minEvictableIdleTimeMillis" value="${jdbc_minEvictableIdleTimeMillis}" />
+		<property name="validationQuery" value="${jdbc_validationQuery}" />
+		<property name="testWhileIdle" value="${jdbc_testWhileIdle}" />
+		<property name="testOnBorrow" value="${jdbc_testOnBorrow}" />
+		<property name="testOnReturn" value="${jdbc_testOnReturn}" />
+		<property name="poolPreparedStatements" value="${jdbc_poolPreparedStatements}" />
+		<property name="maxOpenPreparedStatements" value="${jdbc_maxOpenPreparedStatements}" />
+	</bean>
+	<!-- 配置Mybatis -->
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath*:com/qing/mapper/xml/*.xml"></property>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.qing.mapper"></property>
+		<!-- optional unless there are multiple session factories defined -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+	</bean>
+	<!-- 配置事务 -->
+	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 配置freemarker -->
+	<bean id="freemarkerConfigurations" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="location" value="classpath:freemarker.properties"></property>
+	</bean>
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPaths">
+		    <array>
+		        <value>/page/</value>
+		        <value>/component/</value>
+		    </array>
+		</property>
+		<property name="freemarkerSettings" ref="freemarkerConfigurations"></property>
+		<property name="freemarkerVariables">
+			<map>
+				<entry key="PATH" value="blog0225"></entry>
+			</map>
+		</property>
+	</bean>
+	<!-- 配置freeMarker视图解析器 -->
+	<bean id="freemarkerResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+		<property name="order" value="1"></property>
+		<property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"></property>
+		<property name="contentType" value="text/html;charset=utf-8" />
+	</bean>
+	<!-- 配置jsp的视图解析器 -->
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	     <property name="order" value="8"></property>
+	     <property name="suffix" value=".jsp"/>
+	</bean>
+	<!-- SpringUtils -->
+	<bean id="SpringUtils" class="com.qing.util.SpringUtils"></bean>
+
+</beans>
